@@ -6,34 +6,30 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # <- CAMBIADO
+    runs-on: ubuntu-22.04  # Más estable que 24.04
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Get Date
-        id: get-date
-        run: echo "date=$(date -u '+%Y%m%d')" >> $GITHUB_ENV
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: '3.10'
+
+      - name: Get Date
+        id: get-date
+        run: echo "date=$(date -u '+%Y%m%d')" >> $GITHUB_ENV
 
       - name: Install system dependencies
         run: |
           sudo apt update
           sudo apt install -y \
             build-essential \
-            git \
-            zip \
-            unzip \
+            git zip unzip \
             openjdk-17-jdk \
-            python3-pip \
-            python3-setuptools \
-            python3-wheel \
-            python3-venv \
+            python3-pip python3-setuptools \
+            python3-wheel python3-venv \
             libncurses5
 
       - name: Cache .buildozer_global
@@ -58,7 +54,7 @@ jobs:
           export PATH="$HOME/.local/bin:$PATH"
           buildozer android debug
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: package
