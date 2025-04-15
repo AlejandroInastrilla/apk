@@ -10,13 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Se actualiza la sintaxis para usar las nuevas versiones de cache
+      # Actualización para usar el entorno GITHUB_ENV
       - name: Get Date
         id: get-date
         run: |
           echo "date=$(date -u '+%Y%m%d')" >> $GITHUB_ENV
         shell: bash
 
+      # Actualizar a cache@v3 para evitar problemas con cache@v2
       - name: Cache Buildozer global directory
         uses: actions/cache@v3
         with:
@@ -29,6 +30,7 @@ jobs:
           path: .buildozer
           key: ${{ runner.os }}-${{ env.date }}-${{ hashFiles('buildozer.spec') }}
 
+      # Configuración de Buildozer
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
@@ -36,8 +38,9 @@ jobs:
           command: buildozer android debug
           buildozer_version: master
 
+      # Actualización a upload-artifact@v3 para resolver el error
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: package
           path: ${{ steps.buildozer.outputs.filename }}
